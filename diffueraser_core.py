@@ -1691,8 +1691,8 @@ class DiffuEraserModel:
         binary = (mks.sum(1)[:, None, :, :] < 0).to(imgs.dtype)
         binary = F.interpolate(binary, size=(imgs.shape[-2] // 8, imgs.shape[-1] // 8))
         cond_latents = []
-        for i in range(0, imgs.shape[0], 16):
-            cond_latents.append(self.encode_pixels(imgs[i:i + 16]))
+        for i in range(0, imgs.shape[0], 2):
+            cond_latents.append(self.encode_pixels(imgs[i:i + 2]))
         cond_latents = torch.cat(cond_latents, dim=0)
         return torch.concat([cond_latents, binary], 1)
 
@@ -1770,8 +1770,8 @@ class DiffuEraserModel:
             pixel_values.append(preprocess_image_batch([image], tar_height, tar_width, self.device, torch.float32)[0])
         pixel_values = torch.stack(pixel_values).to(dtype=self.dtype)
         latents = []
-        for i in range(0, pixel_values.shape[0], 16):
-            latents.append(self.encode_pixels(pixel_values[i:i + 16]))
+        for i in range(0, pixel_values.shape[0], 2):
+            latents.append(self.encode_pixels(pixel_values[i:i + 2]))
         latents = torch.cat(latents, dim=0)
         dump("priori_latents", latents)
 
