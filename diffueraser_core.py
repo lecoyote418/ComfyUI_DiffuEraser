@@ -1597,8 +1597,10 @@ class DiffuEraserModel:
     def decode_latents(self, latents):
         raw = (1.0 / VAE_SCALE_FACTOR) * latents
         raw = raw.float()
-        pixels = self.vae.decode(raw)  # (f, h, w, c) in [0,1]
-        return pixels
+        frames = []
+        for i in range(0, raw.shape[0], 1):
+            frames.append(self.vae.decode(raw[i:i + 1]))  # (1, h, w, c) in [0,1]
+        return torch.cat(frames, dim=0)
 
     # ---- model forward -------------------------------------------------
     def model_forward(self, latents_j, t, positive_embeds, brushnet_cond, guidance_scale,
